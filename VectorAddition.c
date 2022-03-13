@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
-#define N 1000000000
+#define N 1000000
 #define Core 8
 
 int A[N];
