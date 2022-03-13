@@ -86,12 +86,13 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    while((*in + 1) % N == *out && tag)
+    while(*in == *out && *tag)
     {
         printf("buffer in full!\n");
         // shm_unlink(shm_buffer_name);
         // shm_unlink(shm_in_name);
         // shm_unlink(shm_out_name);
+        // shm_unlink(shm_tag_name);
         exit(1);
     }
 
@@ -105,6 +106,7 @@ int main(int argc, char *argv[])
     // shm_unlink(shm_buffer_name);
     // shm_unlink(shm_in_name);
     // shm_unlink(shm_out_name);
+    // shm_unlink(shm_tag_name);
 
     return 0;
 }
