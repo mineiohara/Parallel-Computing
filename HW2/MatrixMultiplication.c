@@ -4,7 +4,7 @@
 #include <time.h>
 
 #define N 100
-#define Core 8
+#define Core 4
 
 int A [N][N];
 int B [N][N];
@@ -63,6 +63,7 @@ int main(int argc, char *argv[]) {
     printf("Parallel elapsedTime: %lf ms\n", calcTime(t_start, t_end));
     //Print out the resulting matrix
     
+    transpose(B);
     
     // start time
     clock_gettime( CLOCK_REALTIME, &t_start);
@@ -93,8 +94,8 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
-                                                                                    //The thread will begin control in this function
-void *runner(void *param) {
+void *runner(void *param)
+{
     struct v *data = param;
     int i, j, k;
     
@@ -105,15 +106,14 @@ void *runner(void *param) {
             for (k = 0; k < N; k++)
             {
                 C[i][j] += A[i][k] * B[j][k];
-             }
+            }
         }
     }
 
     pthread_exit(0);
 }
 
-double calcTime(struct timespec tStart, struct timespec tEnd)
-{
+double calcTime(struct timespec tStart, struct timespec tEnd){
     double elapsedTime;
 
     elapsedTime = (tEnd.tv_sec - tStart.tv_sec) * 1000.0;
@@ -127,7 +127,8 @@ void transpose(int matrix[N][N]){
 
     for (i = 0; i < N; i++)
     {
-        for (j = i; j < N; j++){
+        for (j = i + 1; j < N; j++)
+        {
             temp = matrix[i][j];
             matrix[i][j] = matrix[j][i];
             matrix[j][i] = temp;
