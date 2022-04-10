@@ -24,6 +24,7 @@ int main(int argc, char *argv[]) {
     pthread_t tid[Core];       //Thread ID
     pthread_attr_t attr[Core]; //Set of thread attributes
     struct timespec t_start, t_end;
+    double ptime, stime;
     
     for(i = 0; i < N; i++) {
         for(j = 0; j < N; j++) {
@@ -32,41 +33,33 @@ int main(int argc, char *argv[]) {
         }
     }
     
-    // start time Pthread
+    // Pthread parallel
     clock_gettime( CLOCK_REALTIME, &t_start);
 
     transpose(B);
     
     for(i = 0; i < Core; i++) {
-        //Assign a row and column for each thread
         struct v *data = (struct v *) malloc(sizeof(struct v));
         data->i = i;
-        /* Now create the thread passing it data as a parameter */
-        //pthread_t tid;       //Thread ID
-        //pthread_attr_t attr; //Set of thread attributes
-        //Get the default attributes
+
         pthread_attr_init(&attr[i]);
-        //Create the thread
         pthread_create(&tid[i],&attr[i],runner,data);
-        //Make sure the parent waits for all thread to complete
-        //pthread_join(tid, NULL);
     }
 
     for(i = 0; i < Core; i++) {
             pthread_join(tid[i], NULL);
     }
 
-    // stop time
     clock_gettime( CLOCK_REALTIME, &t_end);
+    printf("Parallel elapsedTime: %lf ms\n", ptime = calcTime(t_start, t_end));
 
-    // compute and print the elapsed time in millisec
-    printf("Parallel elapsedTime: %lf ms\n", calcTime(t_start, t_end));
-    //Print out the resulting matrix
-    
+
     transpose(B);
-    
-    // start time
+
+
+    // Sequantial
     clock_gettime( CLOCK_REALTIME, &t_start);
+
     for (i = 0; i < N; i++) {
         for(j = 0; j < N; j++) {
             for(k=0; k<N; k++){
@@ -74,12 +67,14 @@ int main(int argc, char *argv[]) {
             }
         }
     }
-    // stop time
-    clock_gettime( CLOCK_REALTIME, &t_end);
 
-    // compute and print the elapsed time in millisec
-    printf("Sequential elapsedTime: %lf ms\n", calcTime(t_start, t_end));
-    
+    clock_gettime( CLOCK_REALTIME, &t_end);
+    printf("Sequential elapsedTime: %lf ms\n", stime = calcTime(t_start, t_end));
+
+
+    // Check the performance and accuracy
+    printf("Speed up by %.3lf times\n", stime/ptime);
+
     int pass = 1;
     for(i = 0; i < N; i++) {
         for(j = 0; j < N; j++) {
